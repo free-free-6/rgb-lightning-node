@@ -66,6 +66,7 @@ tracing-test = "0.2.5"
 [patch.crates-io]
 lightning = { path = "./rust-lightning/lightning" }
 lightning-background-processor = { path = "./rust-lightning/lightning-background-processor"}
+rgb-lib = { git = "ssh://git@github.com/rgb-tools-devs/rgb-lib", branch = "alpha.14" }
 
 [lints.rust.unexpected_cfgs]
 level = "allow"
