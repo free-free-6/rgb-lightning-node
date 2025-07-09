@@ -47,9 +47,6 @@ jobs:
 
     - name: Build (Linux)
       if: matrix.os == 'ubuntu-latest'
-      env:
-        OPENSSL_STATIC: "1"
-        OPENSSL_DIR: "/usr"
       run: |
         sudo apt update
         sudo apt install -y pkg-config libssl-dev
