@@ -35,7 +35,7 @@ jobs:
         with:
           toolchain: ${{matrix.toolchain}}
       - name: Build
-        run: cargo build --release --features c_bindings
+        run: cargo build --release
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
