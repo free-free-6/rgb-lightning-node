@@ -5,6 +5,7 @@ on:
     branches: [ "feature_lnfi_build" ]
   pull_request:
     branches: [ "feature_lnfi_build" ]
+  workflow_dispatch:
 
 env:
   CARGO_TERM_COLOR: always
