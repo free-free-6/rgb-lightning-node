@@ -55,8 +55,12 @@ jobs:
         export RANLIB=ranlib
         export CARGO_TARGET_X86_64_UNKNOWN_LINUX_MUSL_LINKER=musl-gcc
         
+        export OPENSSL_STATIC=1
+        export OPENSSL_VENDORED=1
+        
         echo "CC version: $(musl-gcc --version | head -1)"
         echo "AR version: $(ar --version | head -1)"
+        echo "Using vendored OpenSSL: $OPENSSL_VENDORED"
         
         cargo build --release --target x86_64-unknown-linux-musl
 
