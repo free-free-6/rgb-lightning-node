@@ -26,11 +26,10 @@ jobs:
     - name: Ensure submodules initialized
       run: git submodule update --init --recursive
 
-    - name: Install Rust
-      uses: actions-rs/toolchain@v1
+    - uses: actions-rust-lang/setup-rust-toolchain@v1
       with:
         toolchain: stable
-        override: true
+        rustflags: ""
 
     - name: Add targets
       run: |
@@ -38,29 +37,19 @@ jobs:
         rustup target add x86_64-pc-windows-gnu
         rustup target add aarch64-apple-darwin
         rustup target add x86_64-apple-darwin
+        rustup target add x86_64-unknown-linux-musl
 
     - name: Install Linux cross compile tool (Linux only)
       if: matrix.os == 'ubuntu-latest'
       run: |
         sudo apt update
-        sudo apt install -y musl-tools musl-dev pkg-config build-essential binutils
+        sudo apt install -y musl-tools musl-dev pkg-config build-essential
 
     - name: Build (Linux)
       if: matrix.os == 'ubuntu-latest'
       run: |
-        rustup target add x86_64-unknown-linux-musl
-        
         export CC=musl-gcc
-        export AR=ar
-        export RANLIB=ranlib
         export CARGO_TARGET_X86_64_UNKNOWN_LINUX_MUSL_LINKER=musl-gcc
-        
-        export OPENSSL_STATIC=1
-        export OPENSSL_VENDORED=1
-        
-        echo "CC version: $(musl-gcc --version | head -1)"
-        echo "AR version: $(ar --version | head -1)"
-        echo "Using vendored OpenSSL: $OPENSSL_VENDORED"
         
         cargo build --release --target x86_64-unknown-linux-musl
 
