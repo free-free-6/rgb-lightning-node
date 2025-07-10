@@ -47,14 +47,25 @@ jobs:
 
     - name: Build (Linux)
       if: matrix.os == 'ubuntu-latest'
-      env:
-        OPENSSL_STATIC: "1"
-        OPENSSL_DIR: "/usr/lib/x86_64-linux-gnu"
-        OPENSSL_LIB_DIR: "/usr/lib/x86_64-linux-gnu"
-        OPENSSL_INCLUDE_DIR: "/usr/include"
       run: |
         sudo apt update
-        sudo apt install -y pkg-config libssl-dev musl-tools
+        sudo apt install -y musl-tools pkg-config curl
+        curl -LO https://musl.cc/x86_64-linux-musl-cross.tgz
+        tar -xzf x86_64-linux-musl-cross.tgz
+        export PATH=$PWD/x86_64-linux-musl-cross/bin:$PATH
+
+        OPENSSL_VERSION=1.1.1w
+        curl -O https://www.openssl.org/source/openssl-$OPENSSL_VERSION.tar.gz
+        tar -xzf openssl-$OPENSSL_VERSION.tar.gz
+        cd openssl-$OPENSSL_VERSION
+        CC=musl-gcc ./Configure no-shared no-dso no-async linux-x86_64 --prefix=$PWD/../openssl-musl
+        make -j$(nproc)
+        make install_sw
+        cd ..
+
+        export OPENSSL_DIR=$PWD/openssl-musl
+        export OPENSSL_STATIC=1
+
         rustup target add x86_64-unknown-linux-musl
         cargo build --release --target x86_64-unknown-linux-musl
 
