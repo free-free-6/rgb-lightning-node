@@ -43,17 +43,25 @@ jobs:
       if: matrix.os == 'ubuntu-latest'
       run: |
         sudo apt update
-        sudo apt install -y musl-tools musl-dev pkg-config build-essential
+        sudo apt install -y pkg-config curl build-essential
+
+    - name: Install musl cross-compile toolchain
+      if: matrix.os == 'ubuntu-latest'
+      run: |
+        curl -L https://musl.cc/x86_64-linux-musl-cross.tgz | tar xz -C /tmp
+        sudo mv /tmp/x86_64-linux-musl-cross /opt/musl
+        
+        echo "/opt/musl/bin" >> $GITHUB_PATH
 
     - name: Build (Linux)
       if: matrix.os == 'ubuntu-latest'
       run: |
         rustup target add x86_64-unknown-linux-musl
         
-        export CC=musl-gcc
-        export CXX=musl-g++
-        export AR=musl-ar
-        export STRIP=musl-strip
+        export CC=x86_64-linux-musl-gcc
+        export AR=x86_64-linux-musl-ar
+        export STRIP=x86_64-linux-musl-strip
+        export CARGO_TARGET_X86_64_UNKNOWN_LINUX_MUSL_LINKER=x86_64-linux-musl-gcc
         
         cargo build --release --target x86_64-unknown-linux-musl
 
