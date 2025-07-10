@@ -43,16 +43,13 @@ jobs:
       if: matrix.os == 'ubuntu-latest'
       run: |
         sudo apt update
-        sudo apt install -y gcc-multilib g++-multilib mingw-w64
+        sudo apt install -y musl-tools pkg-config curl build-essential
 
     - name: Build (Linux)
       if: matrix.os == 'ubuntu-latest'
       run: |
-        sudo apt update
-        sudo apt install -y musl-tools pkg-config curl build-essential
-
         OPENSSL_VERSION=1.1.1w
-        curl -O https://www.openssl.org/source/openssl-$OPENSSL_VERSION.tar.gz
+        curl -LO https://www.openssl.org/source/openssl-$OPENSSL_VERSION.tar.gz
         tar -xzf openssl-$OPENSSL_VERSION.tar.gz
         cd openssl-$OPENSSL_VERSION
         CC=musl-gcc ./Configure no-shared no-dso no-async linux-x86_64 --prefix=$PWD/../openssl-musl
