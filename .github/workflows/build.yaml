@@ -43,7 +43,7 @@ jobs:
       if: matrix.os == 'ubuntu-latest'
       run: |
         sudo apt update
-        sudo apt install -y musl-tools pkg-config curl build-essential
+        sudo apt install -y musl-tools musl-dev pkg-config curl build-essential linux-libc-dev
 
     - name: Build (Linux)
       if: matrix.os == 'ubuntu-latest'
@@ -52,13 +52,18 @@ jobs:
         curl -LO https://www.openssl.org/source/openssl-$OPENSSL_VERSION.tar.gz
         tar -xzf openssl-$OPENSSL_VERSION.tar.gz
         cd openssl-$OPENSSL_VERSION
-        CC=musl-gcc ./Configure no-shared no-dso no-async linux-x86_64 --prefix=$PWD/../openssl-musl
+        
+        CC=musl-gcc ./Configure no-shared no-dso no-async no-sock no-afalgeng linux-x86_64 \
+          --prefix=$PWD/../openssl-musl \
+          --openssldir=$PWD/../openssl-musl/ssl
+        
         make -j$(nproc)
         make install_sw
         cd ..
 
         export OPENSSL_DIR=$PWD/openssl-musl
         export OPENSSL_STATIC=1
+        export CC=musl-gcc
 
         rustup target add x86_64-unknown-linux-musl
         cargo build --release --target x86_64-unknown-linux-musl
